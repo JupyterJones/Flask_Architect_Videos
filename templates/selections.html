@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Video Selection</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/dark.css') }}">
+
+</head>
+<body>
+    <h1>Select Videos to Concatenate</h1>
+    <a href="/">Home</a><br>
+    <p>'static/videos' folder: {{ video_files|length }} videos found</p>
+
+    <form method="POST" id="video-form">
+        <input type="hidden" name="video1" id="video1" value="">
+        <input type="hidden" name="video2" id="video2" value="">
+        <input type="hidden" name="video3" id="video3" value="">
+        <input type="hidden" name="video4" id="video4" value="">
+
+        <div class="video-container">
+            {% for video in video_files %}
+            <div class="video-item" data-video="{{ video }}">
+                <video controls src="static/projects/{{ video }}"></video>
+                <div class="selection-buttons">
+                    <button type="button" class="select-btn" data-order="1">1</button>
+                    <button type="button" class="select-btn" data-order="2">2</button>
+                    <button type="button" class="select-btn" data-order="3">3</button>
+                    <button type="button" class="select-btn" data-order="4">4</button><br/><br/>
+                    
+                </div>
+                static/projects/{{ video }}
+            </div>
+            {% endfor %}
+        </div>
+
+        <br><button type="submit">Concatenate Videos</button>
+    </form>
+
+    <hr>
+    <h2>Output</h2>
+    <p>The concatenated video will be saved as <code>static/projects/joined_mp4.mp4</code>.</p>
+    <video class="sm" src="static/projects/joined_mp4.mp4" controls></video>
+
+    <script>
+        let selections = { 1: "", 2: "", 3: "", 4: "" };
+
+        document.querySelectorAll('.select-btn').forEach(button => {
+            button.addEventListener('click', function() {
+                let order = this.getAttribute('data-order');
+                let videoItem = this.closest('.video-item');
+                let videoFile = videoItem.getAttribute('data-video');
+
+                // Remove previous selection for this order
+                document.querySelectorAll(`.select-btn[data-order="${order}"]`).forEach(btn => btn.classList.remove('selected'));
+
+                // Check if the video was already selected for this order (to allow unselect)
+                if (selections[order] === videoFile) {
+                    selections[order] = "";
+                    document.getElementById(`video${order}`).value = "";
+                } else {
+                    selections[order] = videoFile;
+                    document.getElementById(`video${order}`).value = videoFile;
+                    this.classList.add('selected');
+                }
+            });
+        });
+
+        document.getElementById('video-form').addEventListener('submit', function(event) {
+            // Ensure at least one video is selected
+            if (!selections[1] && !selections[2] && !selections[3] && !selections[4]) {
+                alert("Please select at least one video.");
+                event.preventDefault();
+            }
+        });
+    </script>
+
+</body>
+</html>

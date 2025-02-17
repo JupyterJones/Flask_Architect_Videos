@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Record Audio</title>
+</head>
+<body>
+    <h2>🎤 Voice Recorder</h2>
+    <button id="startRecording">Start Recording</button>
+    <button id="stopRecording" disabled>Stop Recording</button>
+    <p id="status">Press Start to record...</p>
+
+    <h3>📂 Saved Recordings</h3>
+
+  <ul id="recordingList">
+    {% for file in audio_files %}
+    <li>
+        <audio controls>
+            <source src="{{ url_for('static', filename='recordings/' + file) }}" type="audio/mpeg">
+            Your browser does not support the audio element.
+        </audio>
+        <span>{{ file }}</span>
+    </li>
+    {% endfor %}
+</ul>
+
+<script>
+let mediaRecorder;
+let audioChunks = [];
+let stream;
+
+// Function to request microphone access and start recording
+async function startRecording() {
+    try {
+        stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+        mediaRecorder = new MediaRecorder(stream);
+        audioChunks = [];
+
+        mediaRecorder.ondataavailable = (event) => {
+            if (event.data.size > 0) {
+                audioChunks.push(event.data);
+            }
+        };
+
+        mediaRecorder.onstop = async () => {
+            if (audioChunks.length === 0) return;
+
+            const audioBlob = new Blob(audioChunks, { type: "audio/wav" });
+            audioChunks = [];
+
+            const formData = new FormData();
+            formData.append("audio", audioBlob, "recording.wav");
+
+            const response = await fetch("/save_audio", { method: "POST", body: formData });
+
+            if (response.ok) {
+                location.reload();  // Refresh page to show new recording
+            } else {
+                alert("Error saving audio.");
+            }
+
+            stopStream();
+        };
+
+        mediaRecorder.start();
+        document.getElementById("status").textContent = "Recording...";
+        document.getElementById("startRecording").disabled = true;
+        document.getElementById("stopRecording").disabled = false;
+    } catch (error) {
+        alert("Microphone access is required. Please enable it in your browser settings.");
+    }
+}
+
+// Function to stop recording
+function stopRecording() {
+    if (mediaRecorder && mediaRecorder.state === "recording") {
+        mediaRecorder.stop();
+        document.getElementById("status").textContent = "Recording stopped.";
+        document.getElementById("startRecording").disabled = false;
+        document.getElementById("stopRecording").disabled = true;
+    }
+}
+
+// Function to stop microphone stream
+function stopStream() {
+    if (stream) {
+        stream.getTracks().forEach(track => track.stop());
+        stream = null;
+    }
+}
+
+document.getElementById("startRecording").addEventListener("click", startRecording);
+document.getElementById("stopRecording").addEventListener("click", stopRecording);
+</script>
+
+</body>
+</html>

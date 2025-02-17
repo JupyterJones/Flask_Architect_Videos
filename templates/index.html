@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Available Audio Files</title>
+    add css link
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/dark.css') }}">
+
+</head>
+<body>
+
+    <h1>Available Audio Files</h1>
+    {{ audio_files }}
+<a href="{{ url_for('convert_large_text') }}" class="btn">convert_large_text</a>&nbsp;&nbsp;&nbsp;
+<a href="{{ url_for('view_videos') }}" class="btn">View Videos</a><br/><br/>
+<a href="{{ url_for('delete_videos') }}" class="btn">Delete Videos</a>&nbsp;&nbsp;&nbsp;
+<a href="{{ url_for('balacoon') }}" class="btn">Create a Video</a><br/><br/>
+<a href="{{ url_for('zoom_effect') }}" class="btn">Pixel Sorting Video</a>&nbsp;&nbsp;&nbsp;
+<a href="{{ url_for('video_selection') }}" class="btn">Join Four Videos</a><br/><br/>
+<a href="{{ url_for('index_zoom') }}" class="btn">Zoom to Cursor</a>&nbsp;&nbsp;&nbsp;
+<a href="{{ url_for('adjusted_index') }}" class="btn">Match mp4 to mp3 Audio t</a><br/><br/>
+<a href="{{ url_for('record') }}" class="btn">Record Cam Mic</a>
+    <div class="audio-list">
+        {% for audio_file in audio_files %}
+        <div class="audio-item">
+            <a href="{{ url_for('download_audio', filename=audio_file) }}" download>
+                {{ audio_file }}
+            </a>
+            <audio controls>
+                <source src="{{ url_for('download_audio', filename=audio_file) }}" type="audio/mpeg">
+                Your browser does not support the audio element.
+            </audio>
+        </div>
+        {% endfor %}
+    </div>
+
+</body>
+</html>

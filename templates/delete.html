@@ -1,0 +1,40 @@
+<!-- delete.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Delete Videos</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/dark.css') }}">
+
+</head>
+<body>
+
+    <a href="/"><button>Home</button></a>
+    <h1>Delete Videos</h1>
+    <p>Select videos from <strong>static/projects/</strong> to delete.</p>
+<div class="container">
+    <!--form id="delete-form" method="POST"-->
+<form id="delete-form" action="{{ url_for('delete_videos') }}" method="POST">
+    <div class="video-container">
+        {% for video in videos %}
+            <div class="video-item">
+                <video controls>
+                    <source src="{{ url_for('static', filename='projects/' + video) }}" type="video/mp4">
+                    Your browser does not support the video tag.
+                </video>
+                <br>
+                <input type="checkbox" name="videos_to_delete" value="{{ video }}"><br/>
+                <label>{{ video[-15:] }}</label>
+            </div>
+        {% endfor %}
+    </div>
+    <br>
+    <button type="submit">Delete Selected</button>
+</form>
+
+
+</div>
+
+</body>
+</html>

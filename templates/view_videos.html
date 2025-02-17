@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Available Audio Files</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/dark.css') }}">
+</head>
+<body>
+
+    <h1>Available Audio Files</h1>
+
+    <a href="{{ url_for('index') }}" class="btn">🏠 HOME</a>
+<div class="container">
+    <div class="video-container">
+        {% for video in videos %}
+        <div class="video-item">
+            <video controls>
+                <source src="{{ url_for('static', filename='projects/' + video) }}" type="video/mp4">
+                Your browser does not support the video tag.
+            </video>
+            <div class="video-name">{{ video[-18:] }}</div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+</body>
+</html>

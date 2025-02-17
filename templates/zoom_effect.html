@@ -1,0 +1,57 @@
+<!-- templates/zoom_effect.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Image Transitions</title>
+        <link rel="stylesheet" href="{{ url_for('static', filename='css/dark.css') }}">
+  </head>
+<body>
+    <h1>Upload Images for Transition zoom_effects.html</h1>
+    
+    <button><a href="/" class="btn">Home</a></button>&nbsp;&nbsp;&nbsp;
+    <button><a href="zoom_effect" class="btn">Reload to View Videos</a></button>
+    <form action="/zoom_effect" method="POST" enctype="multipart/form-data">
+        <label for="image1">Image 1:</label>
+        <input type="file" name="image1" id="image1" required>
+
+        <label for="image2">Image 2:</label>
+        <input type="file" name="image2" id="image2" required>
+
+        <label for="transition_style">Transition Style:</label>
+        <select name="transition_style" id="transition_style" value="pixel_sorting">
+            <option value="pixel_sorting">Pixel Sorting</option>            <option value="infinite_zoom">Infinite Zoom</option>
+
+        </select>
+
+        <label for="duration">Duration (seconds):</label>
+        <input type="number" step="1" name="duration" id="duration" value="25" required>
+
+        <label for="fps">Frames Per Second (FPS):</label>
+        <input type="number" step="1" name="fps" id="fps" value="30" required>
+
+        <button type="submit">Generate Video</button>
+    </form>
+
+    {% if video %}
+    <div class="video-link">
+        <h2>Video Generated Successfully!</h2>
+        <p>Download your video: <a href="/download/{{ video.split('/')[-1] }}">output.mp4</a></p>
+    </div>
+    {% endif %}
+ <div class="container">
+    <div class="video-container">
+        <div class="video-item">
+            <video src="static/uploads/output.mp4" controls></video>
+        </div>
+        <div class="video-item">
+            <video src="static/uploads/last_generation_no_title.mp4" controls></video>
+        </div>
+        <div class="video-item">
+            <video src="static/uploads/last_generation_with_title.mp4" controls></video>
+        </div>
+    </div>
+</div>
+</body>
+</html>

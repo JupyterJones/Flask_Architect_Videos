@@ -1,0 +1,91 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Video and Audio Processor</title>
+        <link rel="stylesheet" href="{{ url_for('static', filename='css/dark.css') }}">
+
+</head>
+<body>
+<div class="container">
+    <h1>Video and Audio Processor</h1>
+    
+    <a href="{{ url_for('index') }}">Home</a>
+    
+    <!-- Display flash messages if any -->
+    {% with messages = get_flashed_messages() %}
+      {% if messages %}
+        {% for message in messages %}
+          <div class="flash">{{ message }}</div>
+        {% endfor %}
+      {% endif %}
+    {% endwith %}
+    
+    <!-- Upload form -->
+    <form action="{{ url_for('adjusted_process') }}" method="post" enctype="multipart/form-data">
+        <div>
+            <label for="video">Select MP4 Video:</label>
+            <input type="file" name="video" id="video" accept="video/mp4" required>
+        </div>
+        <div>
+            <label for="audio">Select MP3 Audio:</label>
+            <input type="file" name="audio" id="audio" accept="audio/mp3" required>
+        </div>
+        <div>
+            <button type="submit">Generate Video</button>
+        </div>
+    </form>
+    
+    <!-- Previews for selected files -->
+    <div class="preview">
+        <h2>File Previews</h2>
+        <div>
+            <h3>Video Preview</h3>
+            <video id="videoPreview" controls width="640">
+                <source src="" type="video/mp4">
+                Your browser does not support the video tag.
+            </video>
+        </div>
+        <div>
+            <h3>Audio Preview</h3>
+            <audio id="audioPreview" controls>
+                <source src="" type="audio/mp3">
+                Your browser does not support the audio element.
+            </audio>
+        </div>
+    </div>
+    
+    <!-- Display generated video -->
+    <div class="preview">
+        <h2>Generated Video</h2>
+        <video controls width="640">
+            <source src="{{ url_for('static', filename='projects/adjustedspeed.mp4') }}" type="video/mp4">
+            Your browser does not support the video tag.
+        </video>
+    </div>
+</div>
+
+<!-- JavaScript for previewing the selected files -->
+<script>
+    // Video file preview
+    document.getElementById('video').addEventListener('change', function(event) {
+        var file = event.target.files[0];
+        if (file) {
+            var videoPreview = document.getElementById('videoPreview');
+            videoPreview.src = URL.createObjectURL(file);
+            videoPreview.load();
+        }
+    });
+
+    // Audio file preview
+    document.getElementById('audio').addEventListener('change', function(event) {
+        var file = event.target.files[0];
+        if (file) {
+            var audioPreview = document.getElementById('audioPreview');
+            audioPreview.src = URL.createObjectURL(file);
+            audioPreview.load();
+        }
+    });
+</script>
+</body>
+</html>

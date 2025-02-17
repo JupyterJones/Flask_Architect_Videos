@@ -1,0 +1,180 @@
+<!-- balacoon.html -->
+<!DOCTYPE html>  
+<html lang="en">  
+<head>  
+    <meta charset="UTF-8">  
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">  
+    <title>Audio and Video Combiner</title>
+
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/dark.css') }}">  
+ 
+</head>  
+<body>  
+    <a href="/balacoon" class="btn"><button>Refresh</button></a><br/>  <a href="/" class="btn"><button>Home</button></a>
+<h1>Audio and Video Combiner / balacoon.html</h1>   
+    <p>This is a text sample to cut and paste. Here's how we can do it:</p> 
+    <div class=media-container>
+    <div class = media-item>
+    <audio controls><source src="static/assets/louder__streets_radiating_power11614.mp3" type="audio/mpeg">  
+            </audio><br/>11614.mp3
+        </div>
+
+    <div class = media-item>
+    <audio controls><source src="static/assets/louder__streets_radiating_power11697.mp3" type="audio/mpeg">  
+            </audio><br/>     11697.mp3
+        </div>
+
+    <div class = media-item>
+    <audio controls><source src="static/assets/louder__streets_radiating_power12787.mp3" type="audio/mpeg">  
+            </audio><br/>     12787.mp3
+        </div>
+    <div class = media-item>
+    <audio controls><source src="static/assets/louder__streets_radiating_power6097.mp3" type="audio/mpeg">  
+            </audio><br/>     6097.mp3
+        </div>
+
+    <div class = media-item>
+    <audio controls><source src="static/assets/louder__streets_radiating_power6670.mp3" type="audio/mpeg">  
+            </audio><br/>     6670.mp3
+        </div>
+    <div class = media-item>
+    <audio controls><source src="static/assets/louder__streets_radiating_power6671.mp3" type="audio/mpeg">  
+            </audio><br/>     6671.mp3
+        </div>
+
+   <div class = media-item>
+    <audio controls><source src="static/assets/louder__streets_radiating_power8051.mp3" type="audio/mpeg">  
+            </audio><br/>     8051.mp3
+        </div>
+
+    <div class = media-item>
+    <audio controls><source src="static/assets/louder__streets_radiating_power9017.mp3" type="audio/mpeg">  
+            </audio><br/>     9017.mp3
+        </div>
+
+   <div class = media-item>
+    <audio controls><source src="static/assets/louder__streets_radiating_power9136.mp3" type="audio/mpeg">  
+            </audio><br/>     9136.mp3
+        </div>        
+    <div class = media-item>
+    <audio controls><source src="static/assets/louder__streets_radiating_power92.mp3" type="audio/mpeg">  
+            </audio><br/>     92.mp3
+        </div>
+
+
+    </div>           
+            <hr>
+<div class="container">
+    <form method="post">  
+        {% for spwaker in supported_speakers %}
+  
+        <input type="radio" name="bal_speaker" id="{{ spwaker }}" value="{{ spwaker }}" required>  
+        <span>{{ spwaker }}&nbsp;&nbsp;</span>  
+        {% endfor %}  
+        <textarea name="text" rows="10" cols="50" placeholder="Enter your text here..." required></textarea><br><br>  
+        <input type="submit" value="Convert to MP3">  
+        <a href="{{ url_for('balacoon_download_file', filename=file) }}">Download</a>  
+    </form>  
+
+    <hr>  
+    <p>The green numbers below represent different speakers.</p>  
+    <hr>  
+
+    <hr>  
+
+    <form id="video-audio-form" action="/add_sound_to_image" method="post">  
+        <label>Select jpg from static/archived-store/:</label><br />  
+        <div class="video-container">  
+            {% for image in image_files %}  
+            <div class="video-item">  
+                <input type="radio" name="image_path" id="{{ image }}" value="{{ image }}"  
+                    onclick="previewImage('{{ image }}')" required>  
+                <label for="{{ image }}">  
+                    <img src="{{ image }}" class="image-preview" alt="{{ image }}" style="max-width: 100%; height: auto;">  
+                    <!-- remove the first 22 characters of the {{image}} -->
+                    <!-- remove the last 4 characters of the {{image}} -->
+                    {{ image[-16:] }}
+ 
+                </label>  
+            </div>  
+            {% endfor %}  
+        </div>  
+        <img id="image-preview" alt="Image Preview"><br /><br />  
+ <h2>Generated Audio Files:</h2>  
+<label>Select Mp3 Title from static/output:</label><br />  
+<div class="video-container">  
+    {% if audio_files %}  
+        {% for audio in audio_files %}  
+        <div class="video-item">  
+            <button type="button" onclick="playAudio('{{ loop.index }}')">Preview</button>  
+            <audio id="audio_{{ loop.index }}" style="display:none;">  
+                <source src="{{ audio }}" type="audio/mpeg">  
+                Your browser does not support the audio element.  
+            </audio>  
+            <input type="radio" name="audio_path" value="{{ audio }}" required>  
+            <span class="audio-label">{{ audio[-16:-4] }}</span>   
+        </div>  
+        {% endfor %}  
+    {% endif %}  
+</div>  
+        <button type="button" id="create-video">Create Video</button>  
+    </form>  
+
+    <h2>Output Video</h2>  
+    <div id="output-video-section"></div>  
+
+    <script>  
+        document.getElementById('create-video').addEventListener('click', function () {  
+            const form = document.getElementById('video-audio-form');  
+            const formData = new FormData(form);  
+
+            const imageSelected = formData.get('image_path');  
+            const audioSelected = formData.get('audio_path');  
+
+            if (!imageSelected || !audioSelected) {  
+                alert("Please select both an image and audio before proceeding.");  
+                return;  
+            }  
+
+            fetch('/combine_b', {  
+                method: 'POST',  
+                body: formData  
+            })  
+            .then(response => response.json())  
+            .then(data => {  
+                if (data.success) {  
+                    document.getElementById('output-video-section').innerHTML = `  
+                        <h3>Combined Video:</h3>  
+                        <video controls>  
+                            <source src="${data.output_video}" type="video/mp4">  
+                            Your browser does not support the video tag.  
+                        </video>  
+                    `;  
+                } else {  
+                    alert(data.error);  
+                }  
+            })  
+            .catch(error => console.error('Error:', error));  
+        });  
+
+        function playAudio(audioId) {  
+            const audioElement = document.getElementById(`audio_${audioId}`);  
+            const audios = document.querySelectorAll('audio');  
+
+            // Pause and hide any currently playing audio  
+            audios.forEach(audio => {  
+                if (!audio.paused) {  
+                    audio.pause();  
+                    audio.currentTime = 0;  
+                    audio.style.display = 'none'; // Hide after stopping  
+                }  
+            });  
+
+            // Show and play the selected audio  
+            audioElement.style.display = 'block'; // Show the audio element  
+            audioElement.play();  
+        }  
+    </script>  
+</div>
+</body>  
+</html>
